@@ -1,2 +1,4 @@
 .idea
 .env
+posts_collector.session
+posts_collector.session-journal
