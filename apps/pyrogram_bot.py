@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from pyrogram import Client, filters  # телеграм клиент
 from apps.DB_actions import data_base
+
 load_dotenv()
 
 API_ID = os.getenv("API_ID")
@@ -17,10 +18,9 @@ SOURCE_PUBLICS = [
 ]
 PHONE_NUMBER = os.getenv("PHONE_NUMBER")  # номер зарегистрованный в телеге
 
+
 class PyrogramBot:
-
     # Создать можно на my.telegram.org
-
 
     # создаем клиент телеграм
     app = Client("posts_collector", api_id=API_ID, api_hash=API_HASH,
@@ -73,7 +73,6 @@ class PyrogramBot:
         except Exception as e:
             # если произойдет какая-то ошибка в 3 строчках выше - сообщим админу
             client.send_message(PRIVATE_PUBLIC, f'`ERROR {e}`')
-
 
 
 pyrogram_bot = PyrogramBot()
