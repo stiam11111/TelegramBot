@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from pyrogram import Client, filters  # телеграм клиент
 from apps.DB_actions import data_base
+from apps.MyTelebot.bot import myTeleBot
 
 load_dotenv()
 
@@ -32,47 +33,45 @@ class PyrogramBot:
     def new_channel_post(client, message):
         # сохраняем пост в базу (функцию add_post_to_db определим потом)
         post_id = data_base.add_post_to_db(message)
-
         # пересылаем пост в скрытый паблик
-        message.forward(PRIVATE_PUBLIC)
-
-        # в скрытый паблик отправляем присвоенный id поста
-        client.send_message(PRIVATE_PUBLIC, post_id)
+        client.copy_message(-1001813831972 , message.chat.id, message.id)
         # потом для пересылки в публичный паблик админ должен отправить боту этот id
 
     # обработчик нового сообщения из скрытого паблика
     # если админ пишет в паблик `132+` это значит переслать пост с id = 132 в публичный паблик
 
-    @app.on_message(filters.chat(PRIVATE_PUBLIC)
-                    & filters.regex(r'\d+\+')  # фильтр текста сообщения `{число}+`
-                    )
+    @app.on_message(filters.chat(-1001813831972))
     def post_request(client, message):
-        # получаем id поста из сообщения (обрезаем "+" в конце)
-        post_id = str(message.text).strip('+')
-        # получаем из базы пост по этому id
-        post = data_base.db.get(post_id)
-        if post is None:
-            # если нет в базе пишем в скрытый паблик ошибку
-            client.send_message(PRIVATE_PUBLIC,
-                                '`ERROR NO POST ID IN DB`')
-            # и выходим
-            return
+        print('New Post', message)
+        myTeleBot.bot.copy_message(myTeleBot.client_chat_id, message.chat.id, message.id)
 
-        try:
-            # по данным из базы, получаем pyrogram обьект сообщения
-            #
-            # message_id = (post['message_id'] * -1) - 1000000000000
-
-            msg = client.get_messages(post['username'], post['message_id'])
-            # пересылаем его в паблик
-            # as_copy=True значит, что мы не будем отображать паблик донор, будто это наш пост XD
-
-            msg.copy(PUBLIC_PUBLIC)
-            # отправляем сообщение в скрытый паблик о успехе
-            client.send_message(PRIVATE_PUBLIC, f'`SUCCESS REPOST!`')
-        except Exception as e:
-            # если произойдет какая-то ошибка в 3 строчках выше - сообщим админу
-            client.send_message(PRIVATE_PUBLIC, f'`ERROR {e}`')
 
 
 pyrogram_bot = PyrogramBot()
+
+
+# получаем из базы пост по этому id
+        # post = data_base.db.get(post_id)
+        # print(message)
+        # if post is None:
+        #     # если нет в базе пишем в скрытый паблик ошибку
+        #     client.send_message(PRIVATE_PUBLIC,
+        #                         '`ERROR NO POST ID IN DB`')
+        #     # и выходим
+        #     return
+        #
+        # try:
+        #     # по данным из базы, получаем pyrogram обьект сообщения
+        #     #
+        #     # message_id = (post['message_id'] * -1) - 1000000000000
+        #
+        #     msg = client.get_messages(post['username'], post['message_id'])
+        #     # пересылаем его в паблик
+        #     # as_copy=True значит, что мы не будем отображать паблик донор, будто это наш пост XD
+        #
+        #     msg.copy(PUBLIC_PUBLIC)
+        #     # отправляем сообщение в скрытый паблик о успехе
+        #     client.send_message(PRIVATE_PUBLIC, f'`SUCCESS REPOST!`')
+        # except Exception as e:
+        #     # если произойдет какая-то ошибка в 3 строчках выше - сообщим админу
+        #     client.send_message(PRIVATE_PUBLIC, f'`ERROR {e}`')

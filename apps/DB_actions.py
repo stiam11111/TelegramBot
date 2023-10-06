@@ -25,6 +25,7 @@ class DataBase:
         self.db[str(new_id)] = {
             'username': message.chat.username,  # паблик-донор
             'message_id': message.id,  # внутренний id сообщения
+
         }
         return new_id
 
