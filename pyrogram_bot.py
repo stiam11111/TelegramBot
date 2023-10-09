@@ -33,12 +33,13 @@ count = 1
 @app.on_message(filters.chat(SOURCE_PUBLICS))
 def new_channel_post(client, message):
     global last_media_group_id, count
-    button_foo = types.InlineKeyboardButton('Foo', callback_data='foo')
-    button_bar = types.InlineKeyboardButton('Bar', callback_data='bar')
+    button_send = types.InlineKeyboardButton('Отправить', callback_data='send')
+    button_delete = types.InlineKeyboardButton('Удалить', callback_data='delete')
 
     keyboard = types.InlineKeyboardMarkup()
-    keyboard.add(button_foo)
-    keyboard.add(button_bar)
+    keyboard.add(button_send)
+    keyboard.add(button_delete)
+
 
     # Check if the message is part of a media group and the media group ID is different
     if message.media_group_id:
@@ -48,17 +49,30 @@ def new_channel_post(client, message):
             count = 1
             # Process the media group (e.g., copy it to the destination chat)
             client.copy_media_group(PRIVATE_PUBLIC, message.chat.id, message.id)
-            bot.send_message(PRIVATE_PUBLIC, text='Keyboard example', reply_markup=keyboard)
+            bot.send_message(PRIVATE_PUBLIC, text='Выберите действие', reply_markup=keyboard)
         else:
             count = count + 1
     else:
         client.copy_message(PRIVATE_PUBLIC, message.chat.id, message.id)
-        bot.send_message(PRIVATE_PUBLIC, text='Keyboard example', reply_markup=keyboard)
+        bot.send_message(PRIVATE_PUBLIC, text='Выберите действие', reply_markup=keyboard)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
-    bot.edit_message_text('Отправлено', call.message.chat.id, call.message.id)
+    if call.data == "delete":
+        if call.message.media_group_id:
+            media_group_messages = app.get_media_group(call.message.chat.id, call.message.media_group_id)
+            for media_message in media_group_messages:
+                bot.delete_message(media_message.chat.id, media_message.message_id - 1)
+        else:
+            bot.delete_message(call.message.chat.id, call.message.message_id - 1)
+        bot.edit_message_text('Удалено', call.message.chat.id, call.message.id)
+
+    elif call.data == "send":
+        channel_id = PRIVATE_PUBLIC
+        bot.forward_message(channel_id, call.message.chat.id, call.message.message_id)
+        bot.edit_message_text('Отправлено', call.message.chat.id, call.message.id)
+
 
 
 @app.on_edited_message(filters.chat(PRIVATE_PUBLIC))
