@@ -12,7 +12,7 @@ bot = telebot.TeleBot(BOT_ID)
 API_ID = os.getenv("API_ID")
 API_HASH = os.getenv("API_HASH")
 
-PRIVATE_PUBLIC = os.getenv("PRIVATE_PUBLIC")  # скрытый паблик для управления ботом
+PRIVATE_PUBLIC = int(os.getenv("PRIVATE_PUBLIC"))  # скрытый паблик для управления ботом
 PUBLIC_PUBLIC = os.getenv("PUBLIC_PUBLIC")  # паблик куда будем репостить
 SOURCE_PUBLICS = [
     # список пабликов-доноров, откуда бот будет пересылать посты
@@ -63,7 +63,11 @@ def callback_handler(call):
 
 @app.on_edited_message(filters.chat(PRIVATE_PUBLIC))
 def post_in_public(client, message):
-    client.copy_media_group(-1001813831972, message.chat.id, message.id - 1)
+    print('New' , message)
+    try:
+        client.copy_media_group(PRIVATE_PUBLIC, message.chat.id, message.id - 1)
+    except ValueError:
+        client.copy_message(PRIVATE_PUBLIC, message.chat.id, message.id - 1)
 
 
 if __name__ == '__main__':
