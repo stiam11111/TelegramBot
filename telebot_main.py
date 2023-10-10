@@ -1,6 +1,6 @@
-from apps.MyTelebot.bot import myTeleBot
+from pyrogram_bot import bot
 
 if __name__ == '__main__':
     print('Atempt to run TeleBot')
-    myTeleBot.bot.polling(none_stop=True)
+    bot.polling(none_stop=True)
 
