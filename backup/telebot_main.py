@@ -1,4 +1,4 @@
-from pyrogram_bot import bot
+from backup.pyrogram_bot import bot
 
 if __name__ == '__main__':
     print('Atempt to run TeleBot')
