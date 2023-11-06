@@ -36,15 +36,16 @@ class PyrogramBot:
                           phone_number=self.PHONE_NUMBER)
 
     def run_pyrogram(self):
-        self.app.run()
         print('Atempt to run Pyrogram')
+        self.app.run()
+
 
     def _create_bot(self):
         self.bot = telebot.TeleBot(self.BOT_ID)
 
     def run_telebot(self):
         print('Atempt to run TeleBot')
-        self.bot.polling(none_stop=True)
+        self.bot.polling(long_polling_timeout=5)
 
     def run_events_listeners(self):
 
@@ -58,7 +59,7 @@ class PyrogramBot:
             keyboard.add(button_send)
             keyboard.add(button_delete)
 
-            print('Price= ', self.__price_parser('Hello world aljfskdflsadkj 24.8$'))
+            print(self.__price_parser('HElloo asdfasfa24.8$'))
             # Check if the message is part of a media group and the media group ID is different
             if message.media_group_id:
                 # Save the new media_group_id
@@ -102,16 +103,16 @@ class PyrogramBot:
 
     def __price_parser(self, description):
         price_end = description.find('$')
-        if price_end != -1:
-            i = 1
-            template = '1234567890,.'
 
-            while description[price_end - i]  in template:
+        if price_end != -1:
+
+            template = '1234567890,.'
+            i = 1
+            while description[price_end - i] in template:
                 i = i + 1
             price_start = price_end - i + 1
-            print('start ', price_start )
-            print('start ', price_end)
+            return description[price_start:price_end] + '$'
 
-            return description[price_start:price_end]+'$'
         else:
             return ''
+
