@@ -59,7 +59,11 @@ class PyrogramBot:
             keyboard.add(button_send)
             keyboard.add(button_delete)
 
-            print(self.__price_parser('HElloo asdfasfa24.8$'))
+
+
+            print('Price= ', self.__price_parser('Hello world aljfskdflsadkj 24.8$'))
+
+
             # Check if the message is part of a media group and the media group ID is different
             if message.media_group_id:
                 # Save the new media_group_id
@@ -112,6 +116,7 @@ class PyrogramBot:
                 i = i + 1
             price_start = price_end - i + 1
             return description[price_start:price_end] + '$'
+
 
         else:
             return ''
